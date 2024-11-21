@@ -9,14 +9,16 @@ function App() {
 
   const refresh = async () => {
     setLoading(true)
-    try {
-      const content = await fetchImagesFromApi()
-      setImages(content)
-    } catch (error) {
-      throw new Error("App content error")
-    } finally {
-      setLoading(false)
+
+    const { data, error } = await fetchImagesFromApi()
+
+    if (error) {
+      console.log("error: ", error)
+    } else {
+      setImages(data)
     }
+    setLoading(false)
+
   }
 
   return (

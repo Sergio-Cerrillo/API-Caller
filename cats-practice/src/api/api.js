@@ -9,11 +9,11 @@ export const fetchImagesFromApi = async () => {
             }
         }
         const response = await fetch(apiUrl, options)
-        const data = response.json()
-        return data
+        const data = await response.json()
+        return { data }
 
     } catch (error) {
-        throw new Error("Api error")
+        return { data: null, error }
     }
 
 }
