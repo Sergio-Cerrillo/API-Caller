@@ -1,5 +1,6 @@
 import React from 'react'
 interface GalleryProps {
+
     poke: any[]
     handlePokemonClick: (url: string) => void
     nameFiltered: string
@@ -12,9 +13,9 @@ const Gallery: React.FC<GalleryProps> = ({ poke, handlePokemonClick, nameFiltere
                     <div
                         key={poke.url}
                         className="card"
-                        onClick={() => handlePokemonClick(poke.url)}
+                        onClick={() => handlePokemonClick(poke.name)}
                     >
-                        {poke.name.toUpperCase()}
+                        {poke.name}
                     </div>
                 ))
             ) : (
