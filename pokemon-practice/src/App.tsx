@@ -1,50 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './App.css';
-import { Pokemon, PokemonDetails } from './types/types';
+import type { Pokemon, PokemonDetails } from './types/types';
 import SearchArea from './components/searchArea';
 import Gallery from './components/gallery';
 import ReactPaginate from 'react-paginate';
 import PokemonTypeSelector from './components/pokemonTypeSelector';
 import Modal from './components/modal';
-import { obtainPokemons } from './components/obtainPokemons';
-import { filterPokemonsByName } from './components/filters/filterPokemonsByName';
-import { filterPokemonsByType } from './components/filters/filterPokemonsByType';
 import { fetchPokemonDetails } from './components/pokemonDetails';
 import { rePaginate } from './components/rePaginate';
+import { usePokemons } from './hooks/usePokemons';
+import {ThemeContext} from './context/context'
+
+export const itemsPerPage = 70;
 
 const App = () => {
-  const [poke, setPoke] = useState<Pokemon[]>([]);
-  const [pokeGlobal, setPokeGlobal] = useState<Pokemon[]>([]);
+  
   const [currentPage, setCurrentPage] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [nameFiltered, setNameFiltered] = useState<string>('');
   const [selectedPokemon, setSelectedPokemon] = useState<PokemonDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedType, setSelectedType] = useState<string>('');
+  
+  //context
+  const context = useContext(ThemeContext)
+  if(!context){
+    throw new Error("error on ThemeContext")
+  }
+  const {theme, updateTheme} = context
 
-  const itemsPerPage = 70;
+  //custom hook
+    const { poke, setPoke, totalPages, loading, setLoading, setPokeGlobal, setTotalPages, nameFiltered, setNameFiltered, setSelectedType} = usePokemons()
 
-  useEffect(() => {
-    obtainPokemons(setTotalPages, itemsPerPage, setLoading, setPoke, totalPages, setPokeGlobal);
-  }, []);
-
-  //filter by Name
-  useEffect(() => {
-    filterPokemonsByName(poke, nameFiltered, setPoke, pokeGlobal);
-  }, [nameFiltered]);
-
-  //filter by type
-  useEffect(() => {
-    if (selectedType) {
-      filterPokemonsByType(selectedType, setLoading, itemsPerPage, setPoke, setTotalPages, setPokeGlobal);
-    }
-    if (!selectedType) {
-      obtainPokemons(setTotalPages, itemsPerPage, setLoading, setPoke, totalPages, setPokeGlobal)
-    }
-  }, [selectedType]);
-
-  //pagination
+    //pagination
   const handlePageClick = (event: { selected: number }) => {
     rePaginate(itemsPerPage, setLoading, setPoke, currentPage)
     setCurrentPage(event.selected);
@@ -56,7 +41,7 @@ const App = () => {
   };
 
   return (
-    <div className="App">
+    <div className={theme==="light"? "App-light":"App-dark"}>
       <div className="search-area">
         <SearchArea nameFiltered={nameFiltered} handleNameChange={(e) => setNameFiltered(e.target.value)} />
         <PokemonTypeSelector selectedType={setSelectedType} />
@@ -87,6 +72,12 @@ const App = () => {
           previousClassName="previous"
           nextClassName="next"
         />
+        <div>
+          <h3 className='title-theme'>El tema es: {theme}</h3>
+          
+          <button type='button' className='button-theme' onClick={()=> updateTheme(theme === "light" ? "dark":"light")}>Cambiar Tema</button>
+        </div>
+        
       </footer>
     </div>
   );

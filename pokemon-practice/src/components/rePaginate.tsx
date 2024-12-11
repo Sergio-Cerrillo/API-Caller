@@ -1,5 +1,5 @@
 import { getPokemons } from "../api/api";
-import { Pokemon } from "../types/types";
+import type { Pokemon } from "../types/types";
 
 
 export const rePaginate = async (itemsPerPage: number, setLoading: (loading: boolean) => void, setPoke: (poke: Pokemon[]) => void, currentPage: number) => {
